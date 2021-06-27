@@ -1,17 +1,53 @@
 import React, { Component } from "react";
+import axios from  "axios";
 import "./App.css";
+
+const API_ENDPOINT = "https://jsonplaceholder.typicode.com/posts";
 
 class App extends Component {
   state = {
     posts: []
   };
 
-  handleAdd = () => {
-    console.log("Add");
+  async componentDidMount() {
+      // Pending > resolved (success) OR rejected (failure)
+      /*const promise = axios.get("https://jsonplaceholder.typicode.com/p0osts");
+      console.log(promise);
+      const response = await promise;
+      console.log(response);*/
+
+      const response = await axios.get(API_ENDPOINT);
+      console.log(response);
+      const { data: posts } = response;
+      this.setState({ posts });
+
+  }
+
+handleAdd = async () => {
+      const obj = { title: "some nice title", body: "oh hot body" };
+      const response = await axios.post(API_ENDPOINT, obj);
+      console.log(response);
+      const { data: post } = response;
+      const posts = [post, ...this.state.posts];
+      this.setState({posts});
+/*      const obj = { title: "some nice title", body: "oh hot body" };
+      const promise = axios.post(API_ENDPOINT, obj);
+      const response = await promise;
+      console.log(response);*/
   };
 
-  handleUpdate = post => {
-    console.log("Update", post);
+  handleUpdate = async post => {
+      post.title = "Updated";
+      // const { data } = await axios.put(API_ENDPOINT + "/" + post.id, post);
+      // axios.patch(API_ENDPOINT + "/" + post.id, { title: post.title });
+      // console.log(data);
+      await axios.put(API_ENDPOINT + "/" + post.id, post);
+      const posts = [...this.state.posts];
+      const index = posts.indexOf(post);
+      posts[index] = {...post};
+      // this.setState({posts: posts});
+      this.setState({ posts });
+
   };
 
   handleDelete = post => {
